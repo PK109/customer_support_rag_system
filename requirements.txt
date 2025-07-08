@@ -1,0 +1,8 @@
+dotenv
+gcsfs==2025.5.1
+jupyter
+langchain
+langchain-google-genai
+google-generativeai
+streamlit
+st-files-connection
