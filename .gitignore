@@ -1,7 +1,10 @@
-# Custom locations
+# Custom 
 .ssh/
 secrets.toml
 google-cloud-sdk/
+*.pdf
+data/
+qdrant_storage/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
