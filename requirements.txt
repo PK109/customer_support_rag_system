@@ -6,6 +6,9 @@ jupyter
 langchain
 langchain-google-genai
 google-generativeai
+nbstripout
 qdrant-client[fastembed]>=1.14.2
+sentence_transformers
 streamlit
 st-files-connection
+transformers
