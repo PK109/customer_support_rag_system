@@ -1,6 +1,6 @@
-from search import Search
-from prompts import PromptLoader
-from model_setup import setup_model, setup_llm_client
+from src.code.search import Search
+from src.code.prompts import PromptLoader
+from src.code.model_setup import setup_model, setup_llm_client
 
 def llm(client, prompt, model='gpt-5-nano'):
     response = client.chat.completions.create(
@@ -10,7 +10,7 @@ def llm(client, prompt, model='gpt-5-nano'):
     return response.choices[0].message.content
 
 def refine_query(query, client, query_count, verbose = False) -> list[str]:
-    loader = PromptLoader("data/prompts.yaml") 
+    loader = PromptLoader() 
     prompt = loader.render(
         "refine_query",
         query=query,
@@ -30,7 +30,7 @@ def refine_query(query, client, query_count, verbose = False) -> list[str]:
     return llm_queries
     
 def rag(query, secrets_path, collection, verbose_search=False, verbose_prompt=False):
-    loader = PromptLoader("data/prompts.yaml") 
+    loader = PromptLoader() 
     llm_client = setup_llm_client(secrets_path=secrets_path)
     searcher = Search(model=setup_model(),
                     collection_name=collection, model_name="all-mpnet-base-v2", 

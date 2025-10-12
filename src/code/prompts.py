@@ -2,7 +2,7 @@ import yaml
 from jinja2 import Template
 
 class PromptLoader:
-    def __init__(self, path: str = "data/prompts.yaml"):
+    def __init__(self, path: str = "src/code/data/prompts.yaml"):
         with open(path, "r", encoding="utf-8") as f:
             self.prompts = yaml.safe_load(f)
 
