@@ -1,7 +1,7 @@
 jinja2
 markdown
 jupyter
-langchain
+langchain[openai]
 nbstripout
 pandas
 pymupdf
