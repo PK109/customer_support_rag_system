@@ -3,7 +3,7 @@
 This document explains how to set up a reproducible local environment for the Customer Support RAG System, including Qdrant, Python dependencies, and the secrets file format.
 
 Prerequisites
-- Linux, macOS, or Windows WSL with Docker (for Qdrant) and Python 3.10+, for testing GH Codespaces are convenient.  
+- Linux, macOS, or Windows WSL with Docker (for Qdrant) and Python 3.12+, for testing GH Codespaces are convenient.  
 - pip or virtualenv for Python package management
 
 1) Python environment

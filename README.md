@@ -70,7 +70,7 @@ While chunking, document is validated for missing chapters. Manual modification 
 - Monitoring: the code appends simple search records (query + result scores) to a history file when `Search.search_with_history` is used — you can wire that into a dashboard for monitoring.
 
 ## Reproducibility
-- Dependencies are listed in `requirements.txt`. Run `pip install -r requirements.txt` in a Python 3.10+ virtual environment.  
+- Dependencies are listed in `requirements.txt`. Run `pip install -r requirements.txt` in a Python 3.12+ virtual environment.  
 - The `Makefile` provides reproducible commands for the ingestion flow.  
 - For full reproducibility, start Qdrant locally (see `setup.md`) and populate a collection with `make embed-file`.
 
