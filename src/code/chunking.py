@@ -43,7 +43,12 @@ class TextChunker:
         data = json.loads(json_read)
         chunked_data = []
         for chunk in data:
-            text = self.clean_text(chunk[-1])
+            try:
+                assert len(chunk) == 4, f"Expected 4 elements per chunk, got {len(chunk)} in chapter {chunk[1]}"
+                text = self.clean_text(chunk[-1])
+            except AssertionError as e:
+                print(f"Skipping chunk due to error:\n{e}")
+                continue
             chunks, size = self.chunk_text_by_lines(text, token_limit)
             for text_chunk in chunks:
                 chunked_data.append([
