@@ -3,13 +3,20 @@ SRC_DIR=src/code
 SCRIPTS_DIR=scripts
 MODEL_NAME=all-mpnet-base-v2
 
-.PHONY: all run-all clean dirs download-file convert-pdf chunk-file embed-file upsert
+.PHONY: all run-all clean dirs run-qdrant download-file convert-pdf chunk-file embed-file upsert
 
 all: run-all
 
 dirs:
 	@mkdir -p data models
 
+run-qdrant:
+	@if [ "$(shell docker ps -q -f name=qdrant)" ]; then \
+		echo "Qdrant server is already running."; \
+	else \
+		echo "Starting Qdrant server using Docker..."; \
+		docker run -d --name qdrant -p 6333:6333 -v qdrant_storage:/qdrant/storage qdrant/qdrant; \
+	fi
 # Convenience target: operate on data/$(FNAME) using the same logic as run-all
 download-file: dirs
 	@if [ -z "$(URL)" ]; then echo "Please provide URL=<url> and FNAME=<filename.pdf>"; exit 1; fi
@@ -44,7 +51,7 @@ chunk-file: dirs
 		$(PYTHON) -c "from src.code.chunking import TextChunker; c=TextChunker('sentence-transformers/$(MODEL_NAME)'); c.chunk_file('$$INPUT_PATH', '$$OUT_PATH')"; \
 	fi
 
-embed-file: dirs
+embed-file: dirs run-qdrant
 	@if [ -z "$(FNAME)" ]; then echo "Please provide FNAME=<filename.pdf> (file must be in data/)"; exit 1; fi
 	@if [ -z "$(COLLECTION)" ]; then echo "Please provide COLLECTION=<qdrant collection name>"; exit 1; fi
 	@PDF_PATH="data/$(FNAME)"; \
@@ -61,7 +68,7 @@ embed-file: dirs
 upsert: embed-file
 
 # Run full pipeline from a remote URL into qdrant collection
-run-all: dirs
+run-all: dirs run-qdrant
 	@if [ -z "$(URL)" ]; then echo "Please provide URL and FNAME and COLLECTION (see README)"; exit 1; fi
 	@if [ -z "$(FNAME)" ]; then echo "Please provide FNAME (filename to save as)"; exit 1; fi
 	@if [ -z "$(COLLECTION)" ]; then echo "Please provide COLLECTION name"; exit 1; fi

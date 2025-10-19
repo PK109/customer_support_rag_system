@@ -1,0 +1,20 @@
+refine_query: |
+  Given the user's query, generate {{ query_count }} different reformulations of the query that capture the same intent but use different wording. Each reformulation should be concise and clear.
+  Provide output as sentences separated by new lines.
+  
+  <QUESTION>
+  {{ query }}
+  </QUESTION>
+
+assistant_prompt: |
+  You are an AI assistant that provides helpful and accurate information based on the provided context.
+  Use the context to answer the user's question as best as you can.
+  If the context does not contain relevant information, respond with "I don't know."
+
+  <CONTEXT>
+  {{ context }}
+  </CONTEXT>
+
+  <QUESTION>
+  {{ query }}
+  </QUESTION>
