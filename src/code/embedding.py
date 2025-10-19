@@ -14,32 +14,20 @@ class EmbeddingUploader:
         self.meta = {}
         self.content = []
 
-    def read_text_with_metadata(self, file_path: str):
-        """Read a text file created by save_text_with_metadata and return
-        (metadata_dict, content_str).
-        If no metadata markers are present, return ({}, whole_file_text).
-        Returns (meta_found: bool, content_found: bool)
+    def read_metadata(self, file_path: str):
+        """
+        Reads metadata from a file.
+        If no metadata is present, empty dict is returned to properties.
+        Returns meta_found: bool
         """
         meta_found = False
-        content_found = False
         if not os.path.exists(file_path):
             raise FileNotFoundError(file_path)
         with open(file_path, 'r', encoding='utf-8') as f:
             data = f.read()
 
-        start = data.find("<!--METADATA_START-->")
-        end = data.find("<!--METADATA_END-->")
-        if start == -1 or end == -1 or end < start:
-            # no metadata block, return empty meta and full content
-            json_block = data.strip()
-            try:
-                self.content = json.loads(json_block)
-                content_found = True
-            except Exception:
-                # invalid JSON: fall back to empty metadata
-                self.content = []
-            return meta_found, content_found
-        json_block = data[start + len("<!--METADATA_START-->"):end].strip()
+        json_block = data.strip()
+        print("Found metadata block in", file_path)
         try:
             self.meta = json.loads(json_block)
             meta_found = True
@@ -47,16 +35,7 @@ class EmbeddingUploader:
             # invalid JSON: fall back to empty metadata
             print(f"Error parsing metadata JSON: {e}")
             self.meta = {}
-        # content after metadata end marker
-        json_block = data[end + len("<!--METADATA_END-->"):].lstrip('\n')
-        try:
-            self.content = json.loads(json_block)
-            content_found = True
-        except Exception as e:
-            # invalid JSON: fall back to empty content
-            print(f"Error parsing content JSON: {e}")
-            self.content = []
-        return meta_found, content_found
+        return meta_found
 
 
     def upload_embeddings(self, content_path, qdrant_url="http://localhost:6333"):
@@ -141,7 +120,13 @@ class EmbeddingUploader:
         
         data_content = json.loads(pathlib.Path(content_path).read_text())
         points = []
-        title = self.meta.get('title', 'Unknown Manual')
+        meta_path = content_path.replace("_chunked.json", "_meta.json")
+        meta_found = self.read_metadata(meta_path)
+        if meta_found:
+            title = self.meta.get('title', 'Unknown Manual')
+        else:
+            title = 'Unknown Manual'
+        print("Uploading hybrid embeddings for manual:", title)
         root_chapter = ""
         for index, chapter in enumerate(data_content):
             if chapter[0] == 1:
@@ -164,6 +149,7 @@ class EmbeddingUploader:
                 }
             )
             points.append(point)
+        print(f"Uploading {len(points)} points to collection '{self.collection_name}'...")
         client.upsert(
             collection_name=self.collection_name,
             points=points

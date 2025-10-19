@@ -37,40 +37,21 @@ class PDFToMarkdown:
         return self.md
     
 
-    # def export_json(self, toc):
-    #     out_path = os.path.splitext(self.input_filepath)[0] + '_content.json'
-    #     os.makedirs(os.path.dirname(out_path) or '.', exist_ok=True)
-    #     with open(out_path, 'w', encoding='utf-8') as f:
-    #         json.dump(toc, f, ensure_ascii=False, indent=2)
-    #     return toc
+    def export_json(self, toc):
+        out_path = os.path.splitext(self.input_filepath)[0] + '_content.json'
+        os.makedirs(os.path.dirname(out_path) or '.', exist_ok=True)
+        with open(out_path, 'w', encoding='utf-8') as f:
+            json.dump(toc, f, ensure_ascii=False, indent=2)
+        return toc
 
 
-    def save_text_with_metadata(self, toc, out_path: str | None = None):
-        """Write a text file where a JSON metadata block is placed at the top
-        between HTML comment markers, followed by the markdown/content.
-
-        Format:
-        <!--METADATA_START-->
-        { ... json ... }
-        <!--METADATA_END-->
-
-        <blank line>
-        <content>
+    def save_text(self, toc, out_path: str | None = None):
+        """Write a text file with the markdown/content.
         """
         out_path = out_path or self.output_filepath
         os.makedirs(os.path.dirname(out_path) or '.', exist_ok=True)
-        # build metadata
-        meta = self.doc.metadata or {}
-        meta['page_count'] = self.doc.page_count
-        try:
-            meta['toc'] = self.doc.get_toc() # type: ignore
-        except Exception:
-            meta['toc'] = []
 
         with open(out_path, 'w', encoding='utf-8') as f:
-            f.write(self._meta_start + "\n")
-            json.dump(meta, f, ensure_ascii=False, indent=2)
-            f.write("\n" + self._meta_end + "\n\n")
             # write the textual content (joined output chunks or raw md)
             if self.output:
                 f.write('\n\n'.join(self.output))
@@ -89,6 +70,7 @@ class PDFToMarkdown:
         os.makedirs(os.path.dirname(out_path) or '.', exist_ok=True)
         with open(out_path, 'w', encoding='utf-8') as f:
             json.dump(meta, f, ensure_ascii=False, indent=2)
+        print(f"Wrote metadata to {out_path}")
 
 
     def clean_markdown(self):
@@ -182,5 +164,5 @@ class PDFToMarkdown:
         toc = self.match_toc(chunk_dict)
         # export matched toc as JSON file (existing behavior) with metadata
         # for later reading/parsing with read_text_with_metadata
-        self.save_text_with_metadata(toc)
+        self.export_json(toc)
         return toc
