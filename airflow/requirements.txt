@@ -1,0 +1,8 @@
+# Astro Runtime includes the following pre-installed providers packages: https://www.astronomer.io/docs/astro/runtime-image-architecture#provider-packages
+apache-airflow-providers-qdrant
+pymupdf
+pymupdf4llm
+qdrant-client[fastembed]>=1.14.2
+sentence_transformers
+toml
+transformers
